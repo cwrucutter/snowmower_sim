@@ -4,7 +4,13 @@ project(snowmower_sim)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  sensor_msgs
+  snowmower_msgs
+  nav_msgs
+  roscpp
+  std_msgs
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -76,7 +82,7 @@ find_package(catkin REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES snowmower_sim
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
@@ -88,7 +94,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(include)
 
 ## Declare a cpp library
 # add_library(snowmower_sim
@@ -97,6 +103,7 @@ catkin_package(
 
 ## Declare a cpp executable
 # add_executable(snowmower_sim_node src/snowmower_sim_node.cpp)
+add_executable(sensor_sim src/sensor_sim.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -106,6 +113,7 @@ catkin_package(
 # target_link_libraries(snowmower_sim_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(sensor_sim ${catkin_LIBRARIES})
 
 #############
 ## Install ##
