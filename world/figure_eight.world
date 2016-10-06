@@ -61,7 +61,7 @@ window
 
 
 # throw in a robot
-erratic( pose [ 4.0 3.0 0.0 37.0016 ] name "era" color "blue")
+erratic( pose [ 4.0 2.0 0.0 270 ] name "era" color "blue")
 # and some obstacles
 block( pose [ 0 -1.0 0.0 0.0 ] color "red")
 block( pose [ 0 -1.5 0.0 0.0 ] color "red")
