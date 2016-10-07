@@ -72,6 +72,12 @@ class SenseSim {
   // Determine time since the last time dtEncoder() was called.
   double dtEncoder(ros::Time currentEncTime);
 
+  // Variables needed to create normally distributed random numbers
+  float fn_[128];
+  float wn_[128];
+  uint32_t kn_[128];
+  uint32_t seed_;
+
   // Initialize the parameters
   void init();
 

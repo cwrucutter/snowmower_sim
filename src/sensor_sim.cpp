@@ -30,6 +30,8 @@ SOFTWARE.
 #include <sensor_msgs/Imu.h>
 #include <snowmower_msgs/EncMsg.h>
 #include <nav_msgs/Odometry.h>
+
+#include "snowmower_sim/ziggurat.hpp"
 #include "snowmower_sim/sensor_sim.h"
 
 /* odomSubCB - Odom callback function *
@@ -37,8 +39,8 @@ SOFTWARE.
  * IMU and encoder measurement and publish them.
  */
 void SenseSim::odomSubCB(const nav_msgs::Odometry& odom_msg){
-  // Calculate the time since the last encoder simulation. This is need since the new
-  // encoder measurement is simulated using the velocity of the robot.
+  // Calculate the time since the last encoder simulation. This is need since 
+  // the new encoder measurement is simulated using the velocity of the robot.
   double dtEnc = dtEncoder(odom_msg.header.stamp);
 
   // Create sensor messages to publish
@@ -47,22 +49,34 @@ void SenseSim::odomSubCB(const nav_msgs::Odometry& odom_msg){
 
   // Simulate sensors!
   // Set Imu reading to velocity plus some random noise.
+  // Populate the header info.
   imu_msg.header.stamp = odom_msg.header.stamp;
   imu_msg.header.frame_id = "base_christa";
+  // Simulate based on angular velocity
   imu_msg.angular_velocity.z = odom_msg.twist.twist.angular.z;
-  // Set encoder measurement based on previous encoder count and v and omega plus noise
+  // Add noise
+  imu_msg.angular_velocity.z = imu_msg.angular_velocity.z
+                             + imu_std_*r4_nor(seed_,kn_,fn_,wn_);;
+
+  // Set encoder measurement based on previous encoder count, v, omega, plus
+  // noise.
+  // Populate the header info.
   enc_msg.header.stamp = odom_msg.header.stamp;
   enc_msg.header.frame_id = "base_link";
+  // Simulate based on v, omega, and previous encoder count
   double v = odom_msg.twist.twist.linear.x;
   double omega = odom_msg.twist.twist.angular.z;
   enc_msg.right = enc_pre_.right + ((v - (b_/2)*omega) * dtEnc) * tpmRight_;
-  ROS_INFO_STREAM("RIGHT: v = " << v << ", omega = " << omega <<", b = " << b_ << 
-		  ", dtEnc = " << dtEnc << ", tpmRight = " << tpmRight_ << 
-		  ", enc_msg.right = " <<enc_msg.right);
   enc_msg.left  = enc_pre_.left  + ((v + (b_/2)*omega) * dtEnc) * tpmLeft_;
-  ROS_INFO_STREAM("LEFT:  v = " << v << ", omega = " << omega << ", b = " << b_ << 
-		  ", dtEnc = " << dtEnc << ", tpmLeft  = " << tpmLeft_ << 
-		  ", enc_msg.left  = " << enc_msg.left);
+  // Add noise
+  enc_msg.right = enc_msg.right + enc_std_*r4_nor(seed_,kn_,fn_,wn_);
+  enc_msg.left  = enc_msg.left  + enc_std_*r4_nor(seed_,kn_,fn_,wn_);
+  ROS_INFO_STREAM("RIGHT: v = " << v << ", omega = " << omega <<", b = " << b_
+		  << ", dtEnc = " << dtEnc << ", tpmRight = " << tpmRight_ << 
+		  ", enc_msg.right = " <<enc_msg.right);
+  ROS_INFO_STREAM("LEFT:  v = " << v << ", omega = " << omega << ", b = " 
+		  << b_ << ", dtEnc = " << dtEnc << ", tpmLeft  = " 
+		  << tpmLeft_ << ", enc_msg.left  = " << enc_msg.left);
   // Store current encoder measurement as enc_pre_
   enc_pre_ = enc_msg;
 
@@ -99,6 +113,11 @@ void SenseSim::init(){
   std::cout << "track_width = " << b_ << std::endl;
   std::cout << "tpm_right   = " << tpmRight_ << std::endl;
   std::cout << "tpm_left    = " << tpmLeft_ << std::endl;
+
+  // Random Number Generator Setup
+  r4_nor_setup ( kn_, fn_, wn_ );
+  seed_ = 123456789;
+
 }
 
 // Determine time since the last time dtEnc() was called.
