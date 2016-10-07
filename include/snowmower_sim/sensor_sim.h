@@ -55,12 +55,25 @@ class SenseSim {
   // Sore last odom message to calculate new encoder reading (maybe?).
   nav_msgs::Odometry odom_pre_;
 
+  // Wheel Track
+  double b_;
+  // Left and right encoder ticks per meter traveled
+  int tpmRight_;
+  int tpmLeft_;
+  // Standard Deviation of sensors
+  double enc_std_;
+  double imu_std_;
+  double dw_std_;
+
   // Sore last Encoder tick count. Needed to simulate new encoder reading.
   snowmower_msgs::EncMsg enc_pre_;
   // Also need the time of the last Encoder update.
   ros::Time lastEncTime_;
   // Determine time since the last time dtEncoder() was called.
   double dtEncoder(ros::Time currentEncTime);
+
+  // Initialize the parameters
+  void init();
 
  public:
   SenseSim();

@@ -36,17 +36,39 @@ SOFTWARE.
  * When an nav_msgs::Odometry message arrives on the topic odom, simulate an
  * IMU and encoder measurement and publish them.
  */
-void SenseSim::odomSubCB(const nav_msgs::Odometry& msg){
-  double dtEnc = dtEncoder(msg.header.stamp);
-  ROS_INFO_STREAM("dtEnc = " << dtEnc);
+void SenseSim::odomSubCB(const nav_msgs::Odometry& odom_msg){
+  // Calculate the time since the last encoder simulation. This is need since the new
+  // encoder measurement is simulated using the velocity of the robot.
+  double dtEnc = dtEncoder(odom_msg.header.stamp);
+
+  // Create sensor messages to publish
   snowmower_msgs::EncMsg enc_msg;
   sensor_msgs::Imu imu_msg;
 
   // Simulate sensors!
-  ROS_INFO_STREAM("Odom message recieved. Simulating sensors.");
-
+  // Set Imu reading to velocity plus some random noise.
+  imu_msg.header.stamp = odom_msg.header.stamp;
+  imu_msg.header.frame_id = "base_christa";
+  imu_msg.angular_velocity.z = odom_msg.twist.twist.angular.z;
+  // Set encoder measurement based on previous encoder count and v and omega plus noise
+  enc_msg.header.stamp = odom_msg.header.stamp;
+  enc_msg.header.frame_id = "base_link";
+  double v = odom_msg.twist.twist.linear.x;
+  double omega = odom_msg.twist.twist.angular.z;
+  enc_msg.right = enc_pre_.right + ((v - (b_/2)*omega) * dtEnc) * tpmRight_;
+  ROS_INFO_STREAM("RIGHT: v = " << v << ", omega = " << omega <<", b = " << b_ << 
+		  ", dtEnc = " << dtEnc << ", tpmRight = " << tpmRight_ << 
+		  ", enc_msg.right = " <<enc_msg.right);
+  enc_msg.left  = enc_pre_.left  + ((v + (b_/2)*omega) * dtEnc) * tpmLeft_;
+  ROS_INFO_STREAM("LEFT:  v = " << v << ", omega = " << omega << ", b = " << b_ << 
+		  ", dtEnc = " << dtEnc << ", tpmLeft  = " << tpmLeft_ << 
+		  ", enc_msg.left  = " << enc_msg.left);
   // Store current encoder measurement as enc_pre_
   enc_pre_ = enc_msg;
+
+  // Publish IMU and wheel encoder messages
+  imuPub_.publish(imu_msg);
+  encPub_.publish(enc_msg);
 }
 
 /* odomSubCB - Odom callback function *
@@ -54,16 +76,29 @@ void SenseSim::odomSubCB(const nav_msgs::Odometry& msg){
  * IMU and encoder measurement and publish them.
  */
 void SenseSim::odomMapSubCB(const nav_msgs::Odometry& msg){
-  double dtEnc = dtEncoder(msg.header.stamp);
-  ROS_INFO_STREAM("dtEnc = " << dtEnc);
-  snowmower_msgs::EncMsg enc_msg;
-  sensor_msgs::Imu imu_msg;
+  // Simulate Decawave stuff
+}
 
-  // Simulate sensors!
-  ROS_INFO_STREAM("Odom message recieved. Simulating sensors.");
-
-  // Store current encoder measurement as enc_pre_
-  enc_pre_ = enc_msg;
+void SenseSim::init(){
+  // Get parameters from launch file or set defaults
+  if(!private_nh_.getParam("enc_std", enc_std_))
+    enc_std_ = 1;
+  if(!private_nh_.getParam("imu_std", imu_std_))
+    imu_std_ = 1;
+  if(!private_nh_.getParam("dw_std", imu_std_))
+    imu_std_ = 1;
+  if(!private_nh_.getParam("track_width", b_))
+    b_ = 1;
+  if(!private_nh_.getParam("tpm_right", tpmRight_))
+    tpmRight_ = 1;
+  if(!private_nh_.getParam("tpm_left", tpmLeft_))
+    tpmLeft_ = 1;
+  std::cout << "imu_std     = " << imu_std_ << std::endl;
+  std::cout << "enc_std     = " << enc_std_ << std::endl;
+  std::cout << "dw_std      = " << dw_std_ << std::endl;
+  std::cout << "track_width = " << b_ << std::endl;
+  std::cout << "tpm_right   = " << tpmRight_ << std::endl;
+  std::cout << "tpm_left    = " << tpmLeft_ << std::endl;
 }
 
 // Determine time since the last time dtEnc() was called.
@@ -94,7 +129,7 @@ SenseSim::SenseSim(): private_nh_("~") {
   // Sleep for a small time to make sure publishing and subscribing works.
   ros::Duration(0.1).sleep();
   // Initialize 
-  // init();
+  init();
 }
 
 /* Destructor */
