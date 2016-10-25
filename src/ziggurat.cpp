@@ -11,7 +11,7 @@
 
 using namespace std;
 
-# include "ziggurat.hpp"
+#include "snowmower_sim/ziggurat.hpp"
 
 //****************************************************************************80
 

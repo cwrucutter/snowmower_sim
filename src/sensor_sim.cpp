@@ -71,10 +71,10 @@ void SenseSim::odomSubCB(const nav_msgs::Odometry& odom_msg){
   // Add noise
   enc_msg.right = enc_msg.right + enc_std_*r4_nor(seed_,kn_,fn_,wn_);
   enc_msg.left  = enc_msg.left  + enc_std_*r4_nor(seed_,kn_,fn_,wn_);
-  ROS_INFO_STREAM("RIGHT: v = " << v << ", omega = " << omega <<", b = " << b_
+  ROS_DEBUG_STREAM("RIGHT: v = " << v << ", omega = " << omega <<", b = " << b_
 		  << ", dtEnc = " << dtEnc << ", tpmRight = " << tpmRight_ << 
 		  ", enc_msg.right = " <<enc_msg.right);
-  ROS_INFO_STREAM("LEFT:  v = " << v << ", omega = " << omega << ", b = " 
+  ROS_DEBUG_STREAM("LEFT:  v = " << v << ", omega = " << omega << ", b = " 
 		  << b_ << ", dtEnc = " << dtEnc << ", tpmLeft  = " 
 		  << tpmLeft_ << ", enc_msg.left  = " << enc_msg.left);
   // Store current encoder measurement as enc_pre_
