@@ -84,7 +84,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES snowmower_sim
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS snowmower_msgs
 #  DEPENDS system_lib
 )
 
@@ -94,7 +94,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
 # add_library(snowmower_sim
@@ -108,6 +108,7 @@ add_executable(sensor_sim src/sensor_sim.cpp src/ziggurat.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(snowmower_sim_node snowmower_sim_generate_messages_cpp)
+add_dependencies(sensor_sim snowmower_sim_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(snowmower_sim_node
