@@ -6,6 +6,7 @@
   <!-- Launch stage with the specified world file-->
   <node pkg="stage_ros" type="stageros" name="stage" args="$(find snowmower_sim)/world/single_i.world">
     <remap from="base_pose_ground_truth" to="odom_map"/>
+    <remap from="base_scan" to="scan"/>
   </node>
 
   <!-- Launch the sensor_sim node -->

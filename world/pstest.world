@@ -1,0 +1,27 @@
+include "pstest_map.inc"
+include "pstest_robot.inc"
+include "pstest_obs.inc"
+include "C.inc"
+
+floorplan
+(
+  bitmap "bitmaps/cave.png"
+  size [15 15 5]
+)
+
+window
+(
+  size [700 700]
+  scale 41
+)
+
+robot
+(
+  name "robot1"
+  pose [-2 0 0 0]
+#  color "orange"
+)
+
+C ( pose [ 0 0 0 0 ] )
+
+# pentagon_sm ( pose [ 0 0 0 0 ] )
