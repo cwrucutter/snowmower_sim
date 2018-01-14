@@ -7,10 +7,10 @@ define block model
 
 define topurg ranger
 (
-	sensor( 			
-    range [ 0.0  30.0 ]
-    fov 180
-   samples 181
+  sensor(		
+    range [ 0.0  20.0 ]
+    fov 270
+   samples 542
   )
 
   # generic model properties
