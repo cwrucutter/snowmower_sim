@@ -1,0 +1,82 @@
+define block model
+(
+  shape "circle"
+  size [0.23 0.23 1.08]
+  gui_nose 0
+)
+
+define topurg ranger
+(
+  sensor(
+    range [ 0.0  20.0 ]
+    fov 270
+   samples 542
+  )
+
+  # generic model properties
+  color "black"
+  size [ 0.05 0.05 0.1 ]
+)
+
+define erratic position
+(
+  #size [0.415 0.392 0.25]
+  #size [0.35 0.35 0.25]
+  size [0.99 0.55 0.72]
+  
+  origin [-0.05 0 0 0]
+  
+  #indicate which way the model is facing
+  gui_nose 1
+  
+  drive "diff"
+  
+  #add lidar to robot
+  topurg(pose [ 0.050 0.000 0 0.000 ])
+)
+
+define floorplan model
+(
+  # sombre, sensible, artistic
+  color "black"
+
+  # most maps will need a bounding box
+  boundary 0
+
+  gui_nose 0
+  gui_grid 0
+
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  laser_return 0
+)
+
+# set the resolution of the underlying raytrace model in meters
+resolution 0.02
+
+interval_sim 100  # simulation timestep in milliseconds
+
+window
+( 
+  size [ 960 960 ] 
+  rotate [ 0.000 0.000 ]
+  # scale is meters per pixel
+  scale 0.125
+)
+
+# load an environment bitmap
+floorplan
+( 
+  name "igvc"
+  bitmap "bitmaps/igvc-stage-world.png"
+  size [120 120 1]
+  #pose [ 3.5 7.5 0.0 0.0 ]
+)
+
+# throw in a robot
+erratic( pose [ 10.0 10.0 0.0 90.0 ] name "otto" color "skyblue4")
+
+#some semi-dynamic obstacles
+block( pose [ 3.5 7.5 0.0 0.0 ] color "DarkOrange")
+block( pose [ 6.0 3.0 0.0 0.0 ] color "DarkOrange")
