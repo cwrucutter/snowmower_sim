@@ -1,7 +1,7 @@
-define block model
+define barrel model
 (
-  shape "circle"
-  size [0.23 0.23 1.08]
+  bitmap "bitmaps/stage-circle.png"
+  size [0.5 0.5 1.08]
   gui_nose 0
 )
 
@@ -14,15 +14,18 @@ define topurg ranger
   )
 
   # generic model properties
-  color "black"
-  size [ 0.05 0.05 0.1 ]
+  color_rgba [ 0 1 0 1 ]
+  size [ 0.1 0.1 0.15 ]
 )
 
-define erratic position
+define robot position
 (
+  color_rgba [ 0.2 0.4 0.8 1 ] 
+  bitmap "bitmaps/stage-otto.png"
+
   #size [0.415 0.392 0.25]
   #size [0.35 0.35 0.25]
-  size [0.99 0.55 0.72]
+  size [0.99 0.55 0.5]
   
   origin [-0.05 0 0 0]
   
@@ -32,13 +35,13 @@ define erratic position
   drive "diff"
   
   #add lidar to robot
-  topurg(pose [ 0.050 0.000 0 0.000 ])
+  topurg(pose [ 0.050 0.000 0.050 0.000 ])
 )
 
 define floorplan model
 (
   # sombre, sensible, artistic
-  color "black"
+  color "gray30"
 
   # most maps will need a bounding box
   boundary 0
@@ -58,11 +61,12 @@ resolution 0.02
 interval_sim 100  # simulation timestep in milliseconds
 
 window
-( 
-  size [ 960 960 ] 
+(
+  size [ 960 720 ]
   rotate [ 0.000 0.000 ]
-  # scale is meters per pixel
-  scale 0.125
+  # scale is just how zoomed in the window is on the map
+  scale 16
+  center [ 64 30 ]
 )
 
 # load an environment bitmap
@@ -70,13 +74,13 @@ floorplan
 ( 
   name "igvc"
   bitmap "bitmaps/igvc-stage-world.png"
-  size [120 120 1]
-  #pose [ 3.5 7.5 0.0 0.0 ]
+  size [ 120 120 1]
+  pose [ 60 60 0.0 0.0 ]
 )
 
 # throw in a robot
-erratic( pose [ 10.0 10.0 0.0 90.0 ] name "otto" color "skyblue4")
+robot( pose [ 36.25 27.5 0.0 90.0 ] name "otto" )
 
-#some semi-dynamic obstacles
-block( pose [ 3.5 7.5 0.0 0.0 ] color "DarkOrange")
-block( pose [ 6.0 3.0 0.0 0.0 ] color "DarkOrange")
+#some gui-movable obstacles
+barrel( pose [ 36.25 40 0.0 0.0 ] color "DarkOrange")
+

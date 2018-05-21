@@ -1,7 +1,7 @@
 <launch>
 
   <!-- Create a static transfrom from map to odom. In the future this will be updated by the localization node. -->
-  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="10 10 0 0 0 0 map odom"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="36.25 27.5 0 1.5708 0 0 map odom"/>
 
   <!-- Launch stage with the specified world file-->
   <node pkg="stage_ros" type="stageros" name="stage" args="$(find snowmower_sim)/world/igvc.world">
